@@ -1,4 +1,5 @@
 import { Request, Response, Router } from "express";
+import { JWT_SECRET } from "@repo/backend-config/config";
 
 const userRoute: Router = Router();
 
