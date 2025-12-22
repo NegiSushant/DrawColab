@@ -17,6 +17,5 @@
   "license": "ISC",
   "dependencies": {
     "@types/node": "^22.15.3"
-  },
-  "type": "commonjs"
+  }
 }

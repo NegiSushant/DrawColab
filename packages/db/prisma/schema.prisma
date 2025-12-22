@@ -6,6 +6,7 @@
 
 generator client {
   provider = "prisma-client"
+  // output   = "../src/generated/prisma"
   output   = "../src/generated/prisma"
 }
 
@@ -16,10 +17,10 @@ datasource db {
 
 model User{
   id String @id @default(uuid())
-  email String
+  email String @unique
   password String
   name String
-  avatar String
+  avatar String?
   rooms Room[]
   chats Chat[]
 }
