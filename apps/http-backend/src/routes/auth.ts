@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "@repo/backend-config/config";
 import { CreateUserSchema, SignInSchema } from "@repo/common/types";
 import bcrypt from "bcrypt";
-import prismaClient from "@repo/db/client";
+import { prismaClient } from "@repo/db/client";
 
 const userRoute: Router = Router();
 
@@ -52,8 +52,12 @@ userRoute.post("/signIn", async (req: Request, res: Response) => {
 });
 
 userRoute.post("/signUp", async (req: Request, res: Response) => {
+  console.log(`request body: ${req.body}`);
   const parsedData = CreateUserSchema.safeParse(req.body);
 
+  console.log(
+    `Parsed data: ${parsedData.error} ${parsedData.data} ${parsedData.success}`
+  );
   if (!parsedData.success) {
     return res.status(404).json({
       status: "fail",
@@ -62,7 +66,7 @@ userRoute.post("/signUp", async (req: Request, res: Response) => {
   }
 
   try {
-    console.log(parsedData.data);
+    console.log(`parsed data: ${parsedData.data}`);
     const password = parsedData.data.password;
     const hashPassword = await bcrypt.hash(password, 10);
 

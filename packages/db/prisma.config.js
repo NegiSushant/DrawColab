@@ -4,16 +4,15 @@ import "dotenv/config";
 // import * as dotenv from "dotenv";
 // dotenv.config({ path: "./packages/db/.env" });
 import { defineConfig } from "prisma/config";
-
 console.log(`Db creade :process.env["DATABASE_URL"]`);
 export default defineConfig({
-  schema: "prisma/schema.prisma",
-  migrations: {
-    path: "prisma/migrations",
-  },
-  datasource: {
-    // url: env("DATABASE_URL"),
-    url: process.env["DATABASE_URL"],
-    // url: process.env.DATABASE_URL as string,
-  },
+    schema: "prisma/schema.prisma",
+    migrations: {
+        path: "prisma/migrations",
+    },
+    datasource: {
+        // url: env("DATABASE_URL"),
+        url: process.env["DATABASE_URL"],
+        // url: process.env.DATABASE_URL as string,
+    },
 });
