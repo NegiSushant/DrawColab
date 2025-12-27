@@ -3,3 +3,9 @@ node_modules
 .env
 
 generated
+
+
+*.tsbuildinfo
+prisma.config.js
+prisma.config.d.ts
+prisma.config.d.ts.map
