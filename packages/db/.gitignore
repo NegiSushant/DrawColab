@@ -9,3 +9,8 @@ generated
 prisma.config.js
 prisma.config.d.ts
 prisma.config.d.ts.map
+tsconfig.tsbuildinfo
+
+src/index.d.ts
+src/index.d.ts.map
+src/index.js
