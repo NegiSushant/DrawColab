@@ -13,7 +13,6 @@ userRoute.post("/signUp", async (req: Request, res: Response) => {
 
   if (!parsedData.success) {
     return res.status(404).json({
-      status: "failed",
       message: "Incorrect Input",
     });
   }
@@ -30,12 +29,10 @@ userRoute.post("/signUp", async (req: Request, res: Response) => {
       },
     });
     return res.status(200).json({
-      message: "success",
       userId: user.id,
     });
   } catch (e) {
     return res.status(411).json({
-      status: "failed",
       message: e,
     });
   }
@@ -48,7 +45,6 @@ userRoute.post("/signIn", async (req: Request, res: Response) => {
 
     if (!parsedData.success) {
       return res.status(404).json({
-        status: "failed",
         message: "Incorrect input",
       });
     }
@@ -61,7 +57,6 @@ userRoute.post("/signIn", async (req: Request, res: Response) => {
 
     if (!user) {
       return res.status(403).json({
-        status: "failed",
         message: "User does not exist!",
       });
     }
@@ -72,7 +67,6 @@ userRoute.post("/signIn", async (req: Request, res: Response) => {
 
     if (!isPasswordMatch) {
       return res.status(403).json({
-        status: "failed",
         message: "Wrong credentials!",
       });
     }
@@ -87,7 +81,6 @@ userRoute.post("/signIn", async (req: Request, res: Response) => {
     });
   } catch (e) {
     return res.status(400).json({
-      status: "failed",
       message: e,
     });
   }

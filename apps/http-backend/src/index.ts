@@ -13,10 +13,9 @@ app.get("/", (req, res) => {
   });
 });
 
-
 const port = 3003;
 
 app.use("/api", router);
 app.listen(port, () => {
-  `http server is running on: http://localhost:${port}`;
+  console.log(`http server is running on: http://localhost:${port}`);
 });
