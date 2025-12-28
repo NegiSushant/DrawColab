@@ -7,66 +7,18 @@ import { prismaClient } from "@repo/db/client";
 
 const userRoute: Router = Router();
 
-userRoute.post("/signIn", async (req: Request, res: Response) => {
-  try {
-    const parsedData = SignInSchema.safeParse(req.body);
-    // const username = req.body.username;
-    // const password = req.body.password;
-    if (!parsedData.success) {
-      return res.status(404).json({
-        status: "fail",
-        message: "Incorrect input",
-      });
-    }
-    const user = await prismaClient.user.findFirst({
-      where: {
-        email: parsedData.data.username,
-        password: parsedData.data.password,
-      },
-    });
-    if (!user) {
-      return res.status(404).json({
-        status: "fail",
-        message: "User does not exist!",
-      });
-    }
-    const token = jwt.sign(
-      {
-        userId: user?.id,
-      },
-      JWT_SECRET
-    );
-    return res.status(200).json({
-      token,
-    });
-    // return res.status(200).json({
-    //   status: "success",
-    //   message: { username, password },
-    // });
-  } catch (e) {
-    return res.status(400).json({
-      status: "failed",
-      message: e,
-    });
-  }
-});
-
+//User signUp route
 userRoute.post("/signUp", async (req: Request, res: Response) => {
-  console.log(`request body: ${req.body}`);
   const parsedData = CreateUserSchema.safeParse(req.body);
 
-  console.log(
-    `Parsed data: ${parsedData.error} ${parsedData.data} ${parsedData.success}`
-  );
   if (!parsedData.success) {
     return res.status(404).json({
-      status: "fail",
+      status: "failed",
       message: "Incorrect Input",
     });
   }
 
   try {
-    console.log(`parsed data: ${parsedData.data}`);
     const password = parsedData.data.password;
     const hashPassword = await bcrypt.hash(password, 10);
 
@@ -77,7 +29,6 @@ userRoute.post("/signUp", async (req: Request, res: Response) => {
         name: parsedData.data.name,
       },
     });
-    //Check weather user already exist or not
     return res.status(200).json({
       message: "success",
       userId: user.id,
@@ -90,5 +41,56 @@ userRoute.post("/signUp", async (req: Request, res: Response) => {
   }
 });
 
-// export { userRoute };
+//User signin route
+userRoute.post("/signIn", async (req: Request, res: Response) => {
+  try {
+    const parsedData = SignInSchema.safeParse(req.body);
+
+    if (!parsedData.success) {
+      return res.status(404).json({
+        status: "failed",
+        message: "Incorrect input",
+      });
+    }
+    const user = await prismaClient.user.findFirst({
+      where: {
+        email: parsedData.data.username,
+        // password: parsedData.data.password,
+      },
+    });
+
+    if (!user) {
+      return res.status(403).json({
+        status: "failed",
+        message: "User does not exist!",
+      });
+    }
+    const isPasswordMatch = await bcrypt.compare(
+      parsedData.data.password,
+      user.password
+    );
+
+    if (!isPasswordMatch) {
+      return res.status(403).json({
+        status: "failed",
+        message: "Wrong credentials!",
+      });
+    }
+    const token = jwt.sign(
+      {
+        userId: user?.id,
+      },
+      JWT_SECRET
+    );
+    return res.status(200).json({
+      token,
+    });
+  } catch (e) {
+    return res.status(400).json({
+      status: "failed",
+      message: e,
+    });
+  }
+});
+
 export default userRoute;
