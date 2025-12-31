@@ -10,6 +10,7 @@ interface roomData {
   createdAt: string;
   adminId: string;
 }
+
 export default function Canvas() {
   const [rooms, setRooms] = useState<roomData[]>([]);
   const getRooms = async () => {
@@ -31,22 +32,28 @@ export default function Canvas() {
   }, []);
   return (
     <div className="min-h-screen bg-black text-amber-50">
-      <div>Available Rooms</div>
-      {rooms.length > 0 ? (
-        rooms.map((item) => (
-          <div key={item.id}>
-            <p>
-              <strong>Slug:</strong> {item.slug}
-            </p>
-            <p>
-              <strong>Created:</strong>{" "}
-              {new Date(item.createdAt).toLocaleString()}
-            </p>
-          </div>
-        ))
-      ) : (
-        <div>No room created yet!</div>
-      )}
+      <div className="flex flex-1 justify-self-end-safe">
+        <div className="">Create New Room</div>
+        <div>Join Existing Room</div>
+      </div>
+      <div className="justify-center">Available Rooms</div>
+      <div>
+        {rooms.length > 0 ? (
+          rooms.map((item) => (
+            <div key={item.id}>
+              <p>
+                <strong>Slug:</strong> {item.slug}
+              </p>
+              <p>
+                <strong>Created:</strong>{" "}
+                {new Date(item.createdAt).toLocaleString()}
+              </p>
+            </div>
+          ))
+        ) : (
+          <div>No room created yet!</div>
+        )}
+      </div>
     </div>
   );
 }
