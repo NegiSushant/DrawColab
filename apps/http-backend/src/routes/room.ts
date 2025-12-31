@@ -36,6 +36,20 @@ roomRoute.post("/create", middleware, async (req: Request, res: Response) => {
   }
 });
 
+roomRoute.get("/room", middleware, async (req: Request, res: Response) => {
+  const userId = req.userId;
+  const result = await prismaClient.room.findMany({
+    where: { adminId: userId },
+  });
+  // if(result.length === 0){
+  //   return res.status()
+  // }
+  console.log(result);
+  return res.status(200).json({
+    data: result,
+  });
+});
+
 roomRoute.get("/chat/:roomId", async (req: Request, res: Response) => {
   try {
     const roomId = Number(req.params.roomId);

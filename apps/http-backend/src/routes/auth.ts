@@ -12,7 +12,7 @@ userRoute.post("/signUp", async (req: Request, res: Response) => {
   const parsedData = CreateUserSchema.safeParse(req.body);
 
   if (!parsedData.success) {
-    return res.status(404).json({
+    return res.status(400).json({
       message: "Incorrect Input",
     });
   }
