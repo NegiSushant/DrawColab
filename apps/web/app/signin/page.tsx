@@ -29,7 +29,6 @@ export default function SignIn() {
     });
     if (response.status === 200) {
       localStorage.setItem("authorization", response.data.token);
-      console.log(`Token: ${response.data.token}`);
       router.push("/canvas");
     }
   };

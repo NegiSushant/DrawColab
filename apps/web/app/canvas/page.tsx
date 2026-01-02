@@ -4,6 +4,8 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { HTTP_BACKEND } from "../../config";
 import { useRouter } from "next/navigation";
+import CreateRoom from "../../components/CreateNewRoom";
+// import CreateRoom from "../../components/CreateNewRoom";
 
 interface roomData {
   id: number;
@@ -14,6 +16,8 @@ interface roomData {
 
 export default function Canvas() {
   const [rooms, setRooms] = useState<roomData[]>([]);
+  const [isCreateRoom, setIsCreateRoom] = useState<boolean>(false);
+
   const router = useRouter();
   const getRooms = async () => {
     const token = localStorage.getItem("authorization");
@@ -42,7 +46,12 @@ export default function Canvas() {
             <button className="rounded-lg border border-sky-400 px-4 py-2 text-sky-300 hover:bg-sky-400/10">
               Join Room
             </button>
-            <button className="rounded-lg border border-sky-400 px-4 py-2 text-sky-300 hover:bg-sky-400/10">
+            <button
+              onClick={() => {
+                setIsCreateRoom(true);
+              }}
+              className="rounded-lg border border-sky-400 px-4 py-2 text-sky-300 hover:bg-sky-400/10"
+            >
               Create new room
             </button>
           </div>
@@ -75,7 +84,7 @@ export default function Canvas() {
               </div>
               <div className="col-span-2 text-right">
                 <button
-                  onClick={() => alert("tested")}
+                  onClick={() => router.push(`canvas/${room.id}`)}
                   className="rounded-md border border-sky-400 px-3 py-1 text-sm text-sky-300 hover:bg-sky-400/10"
                 >
                   Go to room
@@ -89,6 +98,17 @@ export default function Canvas() {
           </div>
         )}
       </div>
+
+      {/**Create room model Logic */}
+      {isCreateRoom && (
+        <CreateRoom
+          onClose={() => setIsCreateRoom(false)}
+          onRoomCreated={(room) => {
+            setRooms((prev) => [room, ...prev]);
+            setIsCreateRoom(false);
+          }}
+        />
+      )}
     </div>
   );
 }
