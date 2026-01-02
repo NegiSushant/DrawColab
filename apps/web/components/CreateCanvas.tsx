@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { WS } from "../config";
+import { Canvas } from "./Canvas";
 
 export default function RoomCanvas({ roomId }: { roomId: string }) {
   const [socket, setSocket] = useState<WebSocket | null>(null);
@@ -20,10 +21,6 @@ export default function RoomCanvas({ roomId }: { roomId: string }) {
   if (!socket) {
     return <div>Connecting to server....</div>;
   }
-  
-  return (
-    <div className="min-h-screen bg-black text-2xl text-amber-50">
-      hello from room: {roomId}
-    </div>
-  );
+
+  return <Canvas roomId={roomId} socket={socket} />;
 }
