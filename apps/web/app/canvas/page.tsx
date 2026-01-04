@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { HTTP_BACKEND } from "../../config";
 import { useRouter } from "next/navigation";
 import CreateRoom from "../../components/CreateNewRoom";
+import JoinRoom from "../../components/JoinRoom";
 // import CreateRoom from "../../components/CreateNewRoom";
 
 interface roomData {
@@ -16,6 +17,7 @@ interface roomData {
 
 export default function Canvas() {
   const [rooms, setRooms] = useState<roomData[]>([]);
+  const [isJoinRoom, setIsRoomJoin] = useState<boolean>(false);
   const [isCreateRoom, setIsCreateRoom] = useState<boolean>(false);
 
   const router = useRouter();
@@ -43,7 +45,10 @@ export default function Canvas() {
         {/* Top bar */}
         <div className="mb-8 flex items-center justify-between rounded-xl border border-sky-400/60 p-4">
           <div className="flex flex-1 justify-end gap-3">
-            <button className="rounded-lg border border-sky-400 px-4 py-2 text-sky-300 hover:bg-sky-400/10">
+            <button
+              onClick={() => setIsRoomJoin(true)}
+              className="rounded-lg border border-sky-400 px-4 py-2 text-sky-300 hover:bg-sky-400/10"
+            >
               Join Room
             </button>
             <button
@@ -106,6 +111,17 @@ export default function Canvas() {
           onRoomCreated={(room) => {
             setRooms((prev) => [room, ...prev]);
             setIsCreateRoom(false);
+          }}
+        />
+      )}
+
+      {/*Join room Model Logic */}
+      {isJoinRoom && (
+        <JoinRoom
+          onClose={() => setIsRoomJoin(false)}
+          onJoinRoom={(room) => {
+            setRooms((prev) => [room, ...prev]);
+            setIsRoomJoin(false);
           }}
         />
       )}
