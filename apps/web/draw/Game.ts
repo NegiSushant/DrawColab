@@ -17,10 +17,10 @@ type Shape =
     }
   | {
       type: "pencil";
-      startX: number;
-      startY: number;
-      endX: number;
-      endY: number;
+      points: {
+        x: number;
+        y: number;
+      }[];
     };
 
 export class Game {
@@ -31,6 +31,9 @@ export class Game {
   private clicked: boolean;
   private startX = 0;
   private startY = 0;
+  private penX: number = 0;
+  private penY: number = 0;
+
   private selectedTool: Tool = "circle";
 
   socket: WebSocket;
@@ -75,6 +78,16 @@ export class Game {
     };
   }
 
+  drawPencil(shape: Shape) {
+    if (shape.type === "pencil") {
+      this.ctx.strokeStyle = "#3b82f6";
+      const points = shape.points;
+      this.ctx.beginPath();
+      this.ctx.moveTo(points[0]?.x, points[0]?.y);
+      points.forEach((point) => this.ctx.lineTo(point.x, point.y));
+      this.ctx.stroke();
+    }
+  }
   clearCanvas() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.fillStyle = "rgba(0, 0, 0)";
@@ -95,6 +108,7 @@ export class Game {
         );
         this.ctx.stroke();
         this.ctx.closePath();
+      } else if (shape.type === "pencil") {
       }
     });
   }
@@ -102,6 +116,12 @@ export class Game {
     this.clicked = true;
     this.startX = e.clientX;
     this.startY = e.clientY;
+    if (this.selectedTool === "pencil") {
+      this.existingShapes.push({
+        type: "pencil",
+        points: [{ x: e.clientX, y: e.clientY }],
+      });
+    }
   };
 
   mouseUpHandler = (e: MouseEvent) => {
@@ -130,6 +150,14 @@ export class Game {
         centerX: this.startX + radius,
         centerY: this.startY + radius,
       };
+    } else if (selectedTool === "pencil") {
+      const currentShape = this.existingShapes[this.existingShapes.length - 1];
+      this.socket.send(
+        JSON.stringify({
+          type: "chat",
+          message: JSON.stringify({ shape: currentShape }),
+        })
+      );
     }
 
     if (!shape) return;
