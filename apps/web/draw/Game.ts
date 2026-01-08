@@ -195,6 +195,7 @@ export class Game {
       }
     }
   };
+
   initMouseHandlers() {
     this.canvas.addEventListener("mousedown", this.mouseDownHandler);
 

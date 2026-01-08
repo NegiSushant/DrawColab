@@ -38,6 +38,13 @@ export default function CanvasTopBar({
           activated={selectedTool === "rect"}
           icon={"rect"}
         />
+        <IconButton
+          onClick={() => {
+            setSelectedTool("line");
+          }}
+          activated={selectedTool === "line"}
+          icon={"line"}
+        />
       </div>
     </div>
   );
