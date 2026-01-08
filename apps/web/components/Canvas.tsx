@@ -91,6 +91,14 @@ export const Canvas = ({
             ctx.moveTo(startX, startY);
             ctx.lineTo(lEX, lEY);
             ctx.stroke();
+          } else if (selectedTool === "pencil") {
+            const canOffsetX = canvas.offsetLeft;
+            const canOffsetY = canvas.offsetTop;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.lineCap = "round";
+            ctx.lineTo(e.clientX - canOffsetX, e.clientY);
+            ctx.stroke();
           }
         }
       });
