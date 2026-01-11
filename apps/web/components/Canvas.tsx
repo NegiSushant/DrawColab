@@ -16,28 +16,32 @@ export const Canvas = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [draw, setDraw] = useState<Draw>();
   const [selectedTool, setSelectedTool] = useState<Tool>("pencil");
+
   useEffect(() => {
     // draw.setSelectedTool(selectedTool);
     draw?.setSelectedTool(selectedTool);
-  }, [draw, selectedTool]);
+  }, [selectedTool, draw]);
 
   useEffect(() => {
     if (canvasRef.current) {
       const drawing = new Draw(canvasRef.current, roomId, socket);
       setDraw(drawing);
+      return () => {
+        drawing.destroy();
+      };
     }
   }, [roomId, socket]);
 
   return (
     <div className="min-h-max bg-black overflow-hidden">
-      <CanvasTopBar
-        selectedTool={selectedTool}
-        setSelectedTool={setSelectedTool}
-      />
       <canvas
         ref={canvasRef}
         width={window.innerWidth}
         height={window.innerHeight}
+      />
+      <CanvasTopBar
+        selectedTool={selectedTool}
+        setSelectedTool={setSelectedTool}
       />
     </div>
   );

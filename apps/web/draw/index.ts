@@ -11,23 +11,27 @@ type Shape =
     }
   | {
       type: "circle";
-      x: number;
-      y: number;
-      radius: number;
+      startX: number;
+      startY: number;
+      height: number;
+      width: number;
     }
   | {
       type: "line";
-      startx: number;
-      starty: number;
-      endx: number;
-      endy: number;
+      fromX: number;
+      fromY: number;
+      toX: number;
+      toY: number;
+    }
+  | {
+      type: "pencil";
     };
 
 export class Draw {
-  private startX: number = 0;
-  private startY: number = 0;
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
+  private startX: number = 0;
+  private startY: number = 0;
   private startPrint: boolean;
   private roomId: string;
   private existingShape: Shape[];
@@ -43,7 +47,14 @@ export class Draw {
     this.startPrint = false;
     this.existingShape = [];
     this.init();
+    this.initHandlers();
     this.initMouseHandlers();
+  }
+
+  destroy() {
+    this.canvas.removeEventListener("mousedown", this.mouseDownHandler);
+    this.canvas.removeEventListener("mouseup", this.mouseUpHandler);
+    this.canvas.removeEventListener("mousemove", this.mouseMoveHandler);
   }
 
   initMouseHandlers() {
@@ -70,24 +81,28 @@ export class Draw {
     };
   }
 
-  setSelectedTool(tool: Tool) {
+  setSelectedTool(tool: "circle" | "pencil" | "rect" | "line") {
     this.selectedTool = tool;
   }
 
   clearCanvas() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.ctx.fillStyle = "rgba(255, 255, 255)";
+    this.ctx.fillStyle = "rgba(0, 0, 0)";
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
     this.existingShape.map((shape) => {
       if (shape.type === "rect") {
-        this.ctx.fillStyle = "rgba(255, 255, 255)";
-        this.ctx.fillRect(
+        this.ctx.strokeStyle = "rgba(255, 255, 255)";
+        this.drawRectangle(
           shape.startX,
           shape.startY,
-          shape.width,
-          shape.height
+          shape.height,
+          shape.width
         );
+      } else if (shape.type === "circle") {
+        this.drawEllipse(shape.startX, shape.startY, shape.height, shape.width);
+      } else if (shape.type === "line") {
+        this.drawLine(shape.fromX, shape.fromY, shape.toX, shape.toY);
       }
     });
   }
@@ -117,20 +132,20 @@ export class Draw {
         height: height,
       };
     } else if (selectedTool === "circle") {
-      const radius = Math.max(height, width) / 2;
       shape = {
         type: "circle",
-        radius: radius,
-        x: height,
-        y: width,
+        startX: this.startX,
+        startY: this.startY,
+        height: height,
+        width: width,
       };
     } else if (selectedTool === "line") {
       shape = {
         type: "line",
-        startx: this.startX,
-        starty: this.startY,
-        endx: event.clientX,
-        endy: event.clientY,
+        fromX: this.startX,
+        fromY: this.startY,
+        toX: event.clientX,
+        toY: event.clientY,
       };
     } else if (selectedTool === "pencil") {
       this.ctx.stroke();
@@ -154,31 +169,18 @@ export class Draw {
       const width = event.clientX - this.startX;
       const height = event.clientY - this.startY;
       this.clearCanvas();
-      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-      this.ctx.strokeStyle = "white";
+      // this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      this.ctx.strokeStyle = "rgba(255,255,255)";
       const selectedTool = this.selectedTool;
       if (selectedTool === "rect") {
         this.drawRectangle(this.startX, this.startY, width, height);
-        // this.ctx.strokeRect(this.startX, this.startY, width, height);
       } else if (selectedTool === "circle") {
-        // const radius = Math.max(width, height) / 2;
-        // const cx = radius + this.startX;
-        // const cy = radius + this.startY;
-        // this.ctx.beginPath();
-        // this.ctx.arc(cx, cy, Math.abs(radius), 0, Math.PI * 2);
-        // this.ctx.stroke();
-        // this.ctx.closePath();
         this.drawEllipse(this.startX, this.startY, height, width);
       } else if (selectedTool === "line") {
         const lEX = event.clientX;
         const lEY = event.clientY;
         this.drawLine(this.startX, this.startY, lEX, lEY);
-        // this.ctx.beginPath();
-        // this.ctx.moveTo(this.startX, this.startY);
-        // this.ctx.lineTo(lEX, lEY);
-        // this.ctx.stroke();
       } else if (selectedTool === "pencil") {
-        
         const canOffsetX = this.canvas.offsetLeft;
         this.ctx.lineCap = "round";
         this.ctx.lineTo(event.clientX - canOffsetX, event.clientY);
@@ -188,7 +190,7 @@ export class Draw {
   };
 
   //Drawing Rectangle shape
-  drawRectangle(startX: number, startY: number, height: number, width: number) {
+  drawRectangle(startX: number, startY: number, width: number, height: number) {
     this.ctx.strokeRect(startX, startY, width, height);
   }
 
