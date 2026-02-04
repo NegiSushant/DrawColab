@@ -87,7 +87,7 @@ export class Draw {
     };
   }
 
-  setSelectedTool(tool: "circle" | "pencil" | "rect" | "line") {
+  setSelectedTool(tool: "circle" | "pencil" | "rect" | "line" | "erase") {
     this.selectedTool = tool;
   }
 
@@ -291,5 +291,10 @@ export class Draw {
 
     ctx.closePath();
     ctx.fill();
+  }
+
+  //Erase items or figures
+  EraseItem(){
+    
   }
 }

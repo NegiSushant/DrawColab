@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Draw } from "../draw";
 import CanvasTopBar from "./CanvasTopBar";
 
-export type Tool = "circle" | "rect" | "pencil" | "line";
+export type Tool = "circle" | "rect" | "pencil" | "line" | "erase";
 
 export const Canvas = ({
   roomId,
