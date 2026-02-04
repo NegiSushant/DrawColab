@@ -69,6 +69,9 @@ importers:
       next:
         specifier: 16.0.10
         version: 16.0.10(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      perfect-freehand:
+        specifier: ^1.2.3
+        version: 1.2.3
       postcss:
         specifier: ^8.5.6
         version: 8.5.6
@@ -2095,6 +2098,9 @@ packages:
 
   perfect-debounce@1.0.0:
     resolution: {integrity: sha512-xCy9V055GLEqoFaHoC1SoLIaLmWctgCUaBaWxDZ7/Zx4CTyX7cJQLJOok/orfjZAh9kEYpjJa4d0KcJmCbctZA==}
+
+  perfect-freehand@1.2.3:
+    resolution: {integrity: sha512-bHZSfqDHGNlPpgH2yxXgPHlQSPpEbo+qg7li0M78J9vNAi2yjwLeA4x79BEQhX44lEWpCLSFCeRZwpw0niiXPA==}
 
   pg-cloudflare@1.2.7:
     resolution: {integrity: sha512-YgCtzMH0ptvZJslLM1ffsY4EuGaU0cx4XSdXLRFae8bPP4dS5xL1tNB3k2o/N64cHJpwU7dxKli/nZ2lUa5fLg==}
@@ -4574,6 +4580,8 @@ snapshots:
   pathe@2.0.3: {}
 
   perfect-debounce@1.0.0: {}
+
+  perfect-freehand@1.2.3: {}
 
   pg-cloudflare@1.2.7:
     optional: true

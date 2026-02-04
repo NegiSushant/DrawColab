@@ -1,5 +1,8 @@
 import { Tool } from "../components/Canvas";
 import { getExistingShapes } from "./http";
+import getStroke from "perfect-freehand";
+
+type Point = { x: number; y: number };
 
 type Shape =
   | {
@@ -25,6 +28,7 @@ type Shape =
     }
   | {
       type: "pencil";
+      points: Point[];
     };
 
 export class Draw {
@@ -36,6 +40,7 @@ export class Draw {
   private roomId: string;
   private existingShape: Shape[];
   private selectedTool: Tool = "pencil";
+  private currentPencilPoints: Point[] = [];
 
   private socket: WebSocket;
 
@@ -104,6 +109,12 @@ export class Draw {
         this.drawEllipse(shape.startX, shape.startY, shape.height, shape.width);
       } else if (shape.type === "line") {
         this.drawLine(shape.fromX, shape.fromY, shape.toX, shape.toY);
+      } else if (
+        shape.type === "pencil" &&
+        Array.isArray(shape.points) &&
+        shape.points.length > 0
+      ) {
+        this.drawPencil(shape.points);
       }
     });
   }
@@ -113,10 +124,8 @@ export class Draw {
     this.startPrint = true;
     this.startX = event.clientX;
     this.startY = event.clientY;
-
     if (this.selectedTool === "pencil") {
-      this.ctx.beginPath();
-      this.ctx.moveTo(this.startX, this.startY);
+      this.currentPencilPoints = [{ x: event.clientX, y: event.clientY }];
     }
   };
 
@@ -131,9 +140,6 @@ export class Draw {
 
     const x = Math.min(this.startX, endX);
     const y = Math.min(this.startY, endY);
-
-    // const height = event.clientX - this.startX;
-    // const width = event.clientY - this.startY;
 
     const width = Math.abs(endX - this.startX);
     const height = Math.abs(endY - this.startY);
@@ -167,10 +173,11 @@ export class Draw {
         toY: endY,
       };
     } else if (selectedTool === "pencil") {
-      this.ctx.closePath();
-      return;
-      // this.ctx.stroke();
-      // this.ctx.beginPath();
+      shape = {
+        type: "pencil",
+        points: this.currentPencilPoints,
+      };
+      this.currentPencilPoints = [];
     }
     if (!shape) return;
 
@@ -197,7 +204,7 @@ export class Draw {
       const height = Math.abs(currentY - this.startY);
 
       this.clearCanvas();
-      // this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      this.drawPencil(this.currentPencilPoints);
       this.ctx.strokeStyle = "rgba(255,255,255)";
 
       const selectedTool = this.selectedTool;
@@ -207,17 +214,13 @@ export class Draw {
       } else if (selectedTool === "circle") {
         this.drawEllipse(x, y, height, width);
       } else if (selectedTool === "line") {
-        // const lEX = event.clientX;
-        // const lEY = event.clientY;
         this.drawLine(this.startX, this.startY, currentX, currentY);
       } else if (selectedTool === "pencil") {
-        this.ctx.lineCap = "round";
-        this.ctx.lineTo(currentX, currentY);
-        this.ctx.stroke();
-        // const canOffsetX = this.canvas.offsetLeft;
-        // this.ctx.lineCap = "round";
-        // this.ctx.lineTo(event.clientX - canOffsetX, event.clientY);
-        // this.ctx.stroke();
+        this.currentPencilPoints.push({
+          x: currentX,
+          y: currentY,
+        });
+        return;
       }
     }
   };
@@ -260,7 +263,33 @@ export class Draw {
     this.ctx.stroke();
   }
 
-  drawPencile() {
-    // const path = new Path2D()
+  //drawing pencil/free drawing
+  drawPencil(points: Point[]) {
+    if (points.length < 2) return;
+
+    const stroke = getStroke(
+      points.map((p) => [p.x, p.y]),
+      {
+        size: 5,
+        thinning: 0.6,
+        smoothing: 0.5,
+        streamline: 0.5,
+        easing: (t) => Math.sin((t * Math.PI) / 2),
+        simulatePressure: true,
+        last: true,
+      },
+    );
+
+    const ctx = this.ctx;
+    ctx.fillStyle = "white";
+    ctx.beginPath();
+
+    stroke.forEach(([x, y], i) => {
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    });
+
+    ctx.closePath();
+    ctx.fill();
   }
 }
